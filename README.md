@@ -2,6 +2,20 @@
 
 A step-by-step tutorial for implementing Transformer architectures from scratch in PyTorch.
 
+
+## 如何开始
+
+1. 阅读代码，理解模型结构的理论实现
+2. 根据代码中的提示，尝试实现模型结构
+3. 对比 `solutions` 目录下的代码，检查代码是否正确
+
+## Getting Started
+
+1. Read the code for each architecture, understand its theoretical basis.
+2. Try to implement the code with the hint in the code.
+3. Compare your implementation with the provided solution.
+
+
 ## Overview
 
 This repository provides detailed, well-documented implementations of Transformer architectures. Each implementation includes:
@@ -56,43 +70,13 @@ transformer_from_scratch/
 | EfficientViT | [EfficientViT](https://arxiv.org/abs/2205.14756) | [microsoft/EfficientViT](https://github.com/microsoft/EfficientViT) | `efficient_transformers/efficient_vit/` |
 | DETR | [End-to-End Object Detection](https://arxiv.org/abs/2005.12872) | [facebookresearch/detr](https://github.com/facebookresearch/detr) | `specialized/detection/` |
 
-## Getting Started
-
-1. Clone the repository:
-```bash
-git clone https://github.com/xfey/transformer-from-scratch.git
-cd transformer-from-scratch
-```
-
-2. Start with the basics:
-   - Read through `vanilla_transformer/attention.py` for attention mechanism
-   - Move on to `vanilla_transformer/encoder.py` for full encoder implementation
-   - Each file contains detailed explanations and comments
-
-## Learning Path
-
-1. **Classic Transformer**
-   - Attention mechanism
-   - Encoder & Decoder
-   - Full transformer model
-
-2. **Attention Variants**
-   - Linear attention
-   - Sparse attention
-   - Efficient implementations
-
-3. **Modern Architectures**
-   - Vision Transformers
-   - Efficient models
-   - Task-specific variants
 
 ## Contributing
 
 Contributions are welcome! Please feel free to:
 - Add new implementations
 - Improve existing explanations
-- Fix bugs or add clarifications
-- Suggest new learning paths
+- Suggest new architectures
 
 ## License
 
