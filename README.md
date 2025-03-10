@@ -9,58 +9,50 @@ This repository provides detailed, well-documented implementations of Transforme
 - 📝 Step-by-step explanations
 - 💡 Detailed comments for every key component
 - 🔍 Mathematical derivations where necessary
-- ⚡ Working examples and usage demonstrations
+- ⚡ Working examples and demonstrations
 
 ## Structure
 
 ```
 transformer_from_scratch/
-├── basics/
-│   ├── attention.py          # Basic attention mechanism explained
-│   ├── positional_enc.py     # Positional encoding implementation
-│   └── feed_forward.py       # Feed-forward network details
-├── nlp/
-│   ├── vanilla/
-│   │   ├── encoder.py        # Classic Transformer encoder
-│   │   ├── decoder.py        # Classic Transformer decoder
-│   │   └── full_model.py     # Complete Transformer model
-│   └── modern/
-│       ├── bert/            # BERT implementation details
-│       └── gpt/             # GPT model structure
-└── vision/
-    ├── vit/
-    │   ├── patch_embed.py    # Image patching and embedding
-    │   └── vit_model.py      # Full ViT implementation
-    └── modern/
-        └── ...              # Modern vision transformer variants
+├── vanilla_transformer/          # 经典 Transformer 结构
+│   ├── attention.py             # 注意力机制实现
+│   ├── encoder.py              # 编码器实现
+│   ├── decoder.py              # 解码器实现
+│   └── transformer.py          # 完整模型
+│
+├── attention_variants/          # 注意力机制变体
+│   ├── linear_attention/       # 线性注意力
+│   ├── sparse_attention/       # 稀疏注意力
+│   └── efficient_attention/    # 高效注意力
+│
+├── efficient_transformers/      # 轻量级/高效架构
+│   ├── performer/              # Performer
+│   ├── reformer/              # Reformer
+│   ├── efficient_vit/         # EfficientViT
+│   └── fast_vit/              # FastViT
+│
+├── vision_transformers/        # 视觉 Transformer
+│   ├── vit/                   # Vision Transformer
+│   ├── swin/                  # Swin Transformer
+│   └── modern_variants/       # 新型视觉 Transformer
+│
+└── specialized/               # 特定任务架构
+    ├── detection/            # 目标检测
+    └── generation/          # 生成模型
 ```
 
-## How to Use
+## Implemented Architectures
 
-Each implementation file serves as both a tutorial and a working module. For example, to understand the basic attention mechanism:
-
-```python
-# attention.py contains detailed explanations like:
-
-class ScaledDotProductAttention(nn.Module):
-    """
-    Scaled Dot-Product Attention mechanism.
-    
-    Paper: "Attention Is All You Need" - https://arxiv.org/abs/1706.03762
-    
-    Step 1: Calculate attention scores
-        - Multiply query with key (matrix multiplication)
-        - Scale by sqrt(d_k)
-    Step 2: Apply softmax to get attention weights
-    Step 3: Multiply with values to get weighted sum
-    """
-    def __init__(self, d_k):
-        super().__init__()
-        self.d_k = d_k
-        
-    def forward(self, Q, K, V, mask=None):
-        # Detailed comments explaining each step...
-```
+| Architecture | Paper | Original Repo | Implementation Path |
+|-------------|-------|---------------|-------------------|
+| Vanilla Transformer | [Attention Is All You Need](https://arxiv.org/abs/1706.03762) | [tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor) | `vanilla_transformer/` |
+| Linear Attention | [Transformers are RNNs](https://arxiv.org/abs/2006.16236) | [idiap/fast-transformers](https://github.com/idiap/fast-transformers) | `attention_variants/linear_attention/` |
+| Performer | [Rethinking Attention with Performers](https://arxiv.org/abs/2009.14794) | [google-research/performer](https://github.com/google-research/performer) | `efficient_transformers/performer/` |
+| Vision Transformer | [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929) | [google-research/vision_transformer](https://github.com/google-research/vision_transformer) | `vision_transformers/vit/` |
+| Swin Transformer | [Hierarchical Vision Transformer](https://arxiv.org/abs/2103.14030) | [microsoft/Swin-Transformer](https://github.com/microsoft/Swin-Transformer) | `vision_transformers/swin/` |
+| EfficientViT | [EfficientViT](https://arxiv.org/abs/2205.14756) | [microsoft/EfficientViT](https://github.com/microsoft/EfficientViT) | `efficient_transformers/efficient_vit/` |
+| DETR | [End-to-End Object Detection](https://arxiv.org/abs/2005.12872) | [facebookresearch/detr](https://github.com/facebookresearch/detr) | `specialized/detection/` |
 
 ## Getting Started
 
@@ -70,32 +62,27 @@ git clone https://github.com/xfey/transformer-from-scratch.git
 cd transformer-from-scratch
 ```
 
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Start with the basics:
-   - Read through `basics/attention.py` for attention mechanism
-   - Move on to `nlp/vanilla/encoder.py` for full encoder implementation
+2. Start with the basics:
+   - Read through `vanilla_transformer/attention.py` for attention mechanism
+   - Move on to `vanilla_transformer/encoder.py` for full encoder implementation
    - Each file contains detailed explanations and comments
 
 ## Learning Path
 
-1. **Fundamentals**
+1. **Classic Transformer**
    - Attention mechanism
-   - Positional encoding
-   - Feed-forward networks
+   - Encoder & Decoder
+   - Full transformer model
 
-2. **Classic Transformer**
-   - Encoder implementation
-   - Decoder implementation
-   - Full model assembly
+2. **Attention Variants**
+   - Linear attention
+   - Sparse attention
+   - Efficient implementations
 
-3. **Modern Variants**
-   - BERT architecture
-   - GPT models
+3. **Modern Architectures**
    - Vision Transformers
+   - Efficient models
+   - Task-specific variants
 
 ## Contributing
 
