@@ -61,7 +61,7 @@ class ScaledDotProductAttention(nn.Module):
         """
         super().__init__()
         # Store the key dimension for scaling
-        # STEP 1: Save d_k for scaling factor computation
+        # STEP 1: Save d_k and calculate the scaling factor √d_k
         
         
     def forward(self, Q, K, V, mask=None):
@@ -99,7 +99,7 @@ class ScaledDotProductAttention(nn.Module):
             pass
         
         # STEP 6: Apply softmax to get attention weights
-        # Use torch.softmax()
+        # Use F.softmax()
         
         
         # STEP 7: Compute output
@@ -107,7 +107,7 @@ class ScaledDotProductAttention(nn.Module):
         # Expected shape: (B, L, d_v)
         
         
-        return output, attention_weights
+        return output
 
 
 class MultiHeadAttention(nn.Module):
@@ -160,7 +160,8 @@ class MultiHeadAttention(nn.Module):
             torch.Tensor: Reshaped tensor of shape (B, num_heads, L, d_k)
         """
         # STEP 5: Implement head splitting
-        # Reshape and transpose dimensions
+        # Reshape x from (B, L, d_model) to (B, L, num_heads, d_k), 
+        # then transpose dimensions to (B, num_heads, L, d_k)
         
         
     def combine_heads(self, x):
@@ -209,7 +210,6 @@ class MultiHeadAttention(nn.Module):
         
         # STEP 11: Apply output projection
         # Project back to d_model dimensions
-        
+
         
         return output
-

@@ -61,7 +61,7 @@ class ScaledDotProductAttention(nn.Module):
         """
         super().__init__()
         # Store the key dimension for scaling
-        # STEP 1: Save d_k for scaling factor computation
+        # STEP 1: Save d_k and calculate the scaling factor √d_k
         self.d_k = d_k
         self.scale = math.sqrt(d_k)
         
@@ -99,7 +99,7 @@ class ScaledDotProductAttention(nn.Module):
             scores = scores.masked_fill(mask == 0, float('-inf'))
         
         # STEP 6: Apply softmax to get attention weights
-        # Use torch.softmax()
+        # Use F.softmax()
         attention_weights = F.softmax(scores, dim=-1)
         
         # STEP 7: Compute output
@@ -107,7 +107,7 @@ class ScaledDotProductAttention(nn.Module):
         # Expected shape: (B, L, d_v)
         output = torch.bmm(attention_weights, V)
         
-        return output, attention_weights
+        return output
 
 
 class MultiHeadAttention(nn.Module):
@@ -164,7 +164,8 @@ class MultiHeadAttention(nn.Module):
             torch.Tensor: Reshaped tensor of shape (B, num_heads, L, d_k)
         """
         # STEP 5: Implement head splitting
-        # Reshape and transpose dimensions
+        # Reshape x from (B, L, d_model) to (B, L, num_heads, d_k), 
+        # then transpose dimensions to (B, num_heads, L, d_k)
         batch_size, seq_length, _ = x.size()
         x = x.view(batch_size, seq_length, self.num_heads, self.d_k)
         return x.transpose(1, 2)
@@ -213,7 +214,7 @@ class MultiHeadAttention(nn.Module):
         
         # STEP 9: Apply scaled dot-product attention
         # Use the attention module initialized in __init__
-        output, attention_weights = self.attention(Q, K, V, mask)
+        output = self.attention(Q, K, V, mask)
         
         # STEP 10: Combine heads
         # Use the combine_heads method
@@ -223,4 +224,4 @@ class MultiHeadAttention(nn.Module):
         # Project back to d_model dimensions
         output = self.W_o(output)
         
-        return output 
+        return output
