@@ -62,7 +62,8 @@ class ScaledDotProductAttention(nn.Module):
         super().__init__()
         # Store the key dimension for scaling
         # STEP 1: Save d_k for scaling factor computation
-        
+        self.d_k = d_k
+        self.scale = math.sqrt(d_k)
         
     def forward(self, Q, K, V, mask=None):
         """
@@ -81,31 +82,30 @@ class ScaledDotProductAttention(nn.Module):
         """
         # STEP 2: Get batch size and sequence length
         # Hint: Use Q.size()
-        
+        batch_size, seq_length, _ = Q.size()
         
         # STEP 3: Compute attention scores
         # Formula: scores = Q × K^T
         # Expected shape: (B, L, L)
-        
+        scores = torch.bmm(Q, K.transpose(1, 2))
         
         # STEP 4: Scale the scores
         # Formula: scores = scores / √d_k
-        
+        scores = scores / self.scale
         
         # STEP 5: Apply mask if provided
         # Set masked positions to -inf before softmax
         if mask is not None:
-            # Your code here
-            pass
+            scores = scores.masked_fill(mask == 0, float('-inf'))
         
         # STEP 6: Apply softmax to get attention weights
         # Use torch.softmax()
-        
+        attention_weights = F.softmax(scores, dim=-1)
         
         # STEP 7: Compute output
         # Formula: output = attention_weights × V
         # Expected shape: (B, L, d_v)
-        
+        output = torch.bmm(attention_weights, V)
         
         return output, attention_weights
 
@@ -132,21 +132,25 @@ class MultiHeadAttention(nn.Module):
         
         # STEP 1: Save parameters
         # Store d_model, num_heads, and compute d_k
-        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
         
         # STEP 2: Initialize projection matrices
         # Create W_q, W_k, W_v for all heads
         # Shape: (d_model, d_model)
-        
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
         
         # STEP 3: Initialize output projection
         # Create W_o to project concatenated heads
         # Shape: (d_model, d_model)
-        
+        self.W_o = nn.Linear(d_model, d_model)
         
         # STEP 4: Initialize attention module
         # Create ScaledDotProductAttention instance
-        
+        self.attention = ScaledDotProductAttention(self.d_k)
         
     def split_heads(self, x):
         """
@@ -161,7 +165,9 @@ class MultiHeadAttention(nn.Module):
         """
         # STEP 5: Implement head splitting
         # Reshape and transpose dimensions
-        
+        batch_size, seq_length, _ = x.size()
+        x = x.view(batch_size, seq_length, self.num_heads, self.d_k)
+        return x.transpose(1, 2)
         
     def combine_heads(self, x):
         """
@@ -176,7 +182,9 @@ class MultiHeadAttention(nn.Module):
         """
         # STEP 6: Implement head combining
         # Transpose and reshape dimensions
-        
+        batch_size, _, seq_length, _ = x.size()
+        x = x.transpose(1, 2)
+        return x.contiguous().view(batch_size, seq_length, self.d_model)
         
     def forward(self, Q, K, V, mask=None):
         """
@@ -193,23 +201,26 @@ class MultiHeadAttention(nn.Module):
         """
         # STEP 7: Apply query, key, value projections
         # Use the projection matrices initialized in __init__
-        
+        Q = self.W_q(Q)
+        K = self.W_k(K)
+        V = self.W_v(V)
         
         # STEP 8: Split heads
         # Use the split_heads method
-        
+        Q = self.split_heads(Q)
+        K = self.split_heads(K)
+        V = self.split_heads(V)
         
         # STEP 9: Apply scaled dot-product attention
         # Use the attention module initialized in __init__
-        
+        output, attention_weights = self.attention(Q, K, V, mask)
         
         # STEP 10: Combine heads
         # Use the combine_heads method
-        
+        output = self.combine_heads(output)
         
         # STEP 11: Apply output projection
         # Project back to d_model dimensions
+        output = self.W_o(output)
         
-        
-        return output
-
+        return output 

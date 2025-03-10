@@ -37,9 +37,11 @@ transformer_from_scratch/
 │   ├── swin/                  # Swin Transformer
 │   └── modern_variants/       # 新型视觉 Transformer
 │
-└── specialized/               # 特定任务架构
-    ├── detection/            # 目标检测
-    └── generation/          # 生成模型
+├── specialized/               # 特定任务架构
+│   ├── detection/            # 目标检测
+│   └── generation/          # 生成模型
+│
+└── solutions/                # 答案
 ```
 
 ## Implemented Architectures
