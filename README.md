@@ -2,6 +2,9 @@
 
 A step-by-step tutorial for implementing Transformer architectures from scratch in PyTorch.
 
+🚧 This code is under rapid development.
+🚧 这个项目刚刚成立，正在快速补充中。
+
 
 ## 如何开始
 

@@ -54,12 +54,12 @@ class FeedForward(nn.Module):
         # STEP 1: Create the two linear transformations
         # First: d_model -> d_ff
         # Second: d_ff -> d_model
-        
+        self.linear1 = nn.Linear(d_model, d_ff)
+        self.linear2 = nn.Linear(d_ff, d_model)
         
         # STEP 2: Initialize dropout
         # Create dropout layer with specified rate
-
-        
+        self.dropout = nn.Dropout(dropout)
         
     def forward(self, x):
         """
@@ -73,8 +73,8 @@ class FeedForward(nn.Module):
         """
         # STEP 3: Apply the feed-forward transformations
         # First linear -> ReLU -> Dropout -> Second linear
-        
-        
+        x = self.dropout(torch.relu(self.linear1(x)))
+        x = self.linear2(x)
         return x
 
 
@@ -101,20 +101,20 @@ class EncoderLayer(nn.Module):
         super().__init__()
         # STEP 4: Initialize multi-head self-attention
         # Create MultiHeadAttention instance
-        
+        self.self_attn = MultiHeadAttention(d_model, num_heads)
         
         # STEP 5: Initialize feed-forward network
         # Create FeedForward instance
-
+        self.feed_forward = FeedForward(d_model, d_ff, dropout)
         
         # STEP 6: Initialize layer normalizations
         # One for attention, one for feed-forward
-
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
         
         # STEP 7: Initialize dropout
         # Create dropout layer
-
-        
+        self.dropout = nn.Dropout(dropout)
         
     def forward(self, x, mask=None):
         """
@@ -129,11 +129,13 @@ class EncoderLayer(nn.Module):
         """
         # STEP 8: Apply attention sub-layer
         # Multi-head attention -> Dropout -> Add & Norm
-
+        attn_output = self.self_attn(x, x, x, mask)
+        x = self.norm1(x + self.dropout(attn_output))
         
         # STEP 9: Apply feed-forward sub-layer
         # Feed-forward -> Dropout -> Add & Norm
-        
+        ff_output = self.feed_forward(x)
+        x = self.norm2(x + self.dropout(ff_output))
         
         return x
 
@@ -157,11 +159,14 @@ class TransformerEncoder(nn.Module):
         super().__init__()
         # STEP 10: Create encoder layers
         # Create a ModuleList of EncoderLayer instances
-        
+        self.layers = nn.ModuleList([
+            EncoderLayer(d_model, num_heads, d_ff, dropout)
+            for _ in range(num_layers)
+        ])
         
         # STEP 11: Initialize dropout
         # Create dropout layer
-        
+        self.dropout = nn.Dropout(dropout)
         
     def forward(self, x, mask=None):
         """
@@ -176,6 +181,7 @@ class TransformerEncoder(nn.Module):
         """
         # STEP 12: Pass input through each encoder layer in sequence
         # Apply dropout to the input, then pass through layers
-        
-        
-        return x
+        x = self.dropout(x)
+        for layer in self.layers:
+            x = layer(x, mask)
+        return x 
