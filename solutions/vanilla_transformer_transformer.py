@@ -66,9 +66,15 @@ class PositionalEncoding(nn.Module):
         #   - create position with `torch.arange`
         #   - create div_term following the formula
         #   - create the pe tensor
+        position = torch.arange(0, max_seq_length, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe = torch.zeros(max_seq_length, d_model)
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0)
         
-        
-        # STEP 2: Register buffer
+        # STEP 2: Register buffer (not a parameter, but part of the state)
+        # This ensures the encoding moves with the model between CPU/GPU
         self.register_buffer('pe', pe)
         
     def forward(self, x):
@@ -83,7 +89,7 @@ class PositionalEncoding(nn.Module):
         """
         # STEP 3: Add positional encoding to input
         # Select the appropriate length of encoding and add to input
-        return x + ...
+        return x + self.pe[:, :x.size(1)]
 
 
 class Transformer(nn.Module):
@@ -116,29 +122,30 @@ class Transformer(nn.Module):
         super().__init__()
         # STEP 4: Create embedding layers
         # Source and target embeddings with appropriate vocab sizes
-        
+        self.src_embed = nn.Embedding(src_vocab_size, d_model)
+        self.tgt_embed = nn.Embedding(tgt_vocab_size, d_model)
         
         # STEP 5: Create positional encoding layer
         # Initialize PositionalEncoding module
-        
+        self.positional_encoding = PositionalEncoding(d_model, max_seq_length)
         
         # STEP 6: Create encoder
         # Initialize TransformerEncoder
-        
+        self.encoder = TransformerEncoder(num_layers, d_model, num_heads, d_ff, dropout)
         
         # STEP 7: Create decoder
         # Initialize TransformerDecoder
-        
+        self.decoder = TransformerDecoder(num_layers, d_model, num_heads, d_ff, dropout)
         
         # STEP 8: Create output layer
         # Linear layer to project to vocabulary size
-        
+        self.output_layer = nn.Linear(d_model, tgt_vocab_size)
         
         # STEP 9: Initialize parameters
         # Xavier/Glorot initialization for better training
         for p in self.parameters():
             if p.dim() > 1:
-                ...
+                nn.init.xavier_uniform_(p)
         
     def create_masks(self, src, tgt):
         """
@@ -155,11 +162,14 @@ class Transformer(nn.Module):
         """
         # STEP 10: Create source mask
         # Mask pad tokens in source sequence
-        
+        src_mask = (src != 0).unsqueeze(1).unsqueeze(2)
         
         # STEP 11: Create target mask
         # Combine padding mask and subsequent mask
-
+        tgt_pad_mask = (tgt != 0).unsqueeze(1).unsqueeze(2)
+        tgt_len = tgt.size(1)
+        tgt_sub_mask = torch.triu(torch.ones((tgt_len, tgt_len)), diagonal=1).bool()
+        tgt_mask = tgt_pad_mask & ~tgt_sub_mask
         
         return src_mask, tgt_mask
     
@@ -176,19 +186,20 @@ class Transformer(nn.Module):
         """
         # STEP 12: Create masks
         # Get source and target masks
-        
+        src_mask, tgt_mask = self.create_masks(src, tgt)
         
         # STEP 13: Process source input
         # Embedding -> Positional Encoding -> Encoder
-        
+        src_embedded = self.positional_encoding(self.src_embed(src) * math.sqrt(self.d_model))
+        enc_output = self.encoder(src_embedded, src_mask)
         
         # STEP 14: Process target input
         # Embedding -> Positional Encoding -> Decoder
-        
+        tgt_embedded = self.positional_encoding(self.tgt_embed(tgt) * math.sqrt(self.d_model))
+        dec_output = self.decoder(tgt_embedded, enc_output, src_mask, tgt_mask)
         
         # STEP 15: Generate final output
-        # Project to vocabulary size and apply log softmax
+        # Project to vocabulary size and apply log_softmax
+        output = F.log_softmax(self.output_layer(dec_output), dim=-1)
         
-        
-        return output
-
+        return output 
