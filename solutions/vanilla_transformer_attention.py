@@ -79,30 +79,26 @@ class ScaledDotProductAttention(nn.Module):
             tuple: (output, attention_weights)
                 - output shape: (B, L, d_v)
                 - attention_weights shape: (B, L, L)
-        """
-        # STEP 2: Get batch size and sequence length
-        # Hint: Use Q.size()
-        batch_size, seq_length, _ = Q.size()
-        
-        # STEP 3: Compute attention scores
+        """     
+        # STEP 2: Compute attention scores
         # Formula: scores = Q × K^T
         # Expected shape: (B, L, L)
         scores = torch.bmm(Q, K.transpose(1, 2))
         
-        # STEP 4: Scale the scores
+        # STEP 3: Scale the scores
         # Formula: scores = scores / √d_k
         scores = scores / self.scale
         
-        # STEP 5: Apply mask if provided
+        # STEP 4: Apply mask if provided
         # Set masked positions to -inf before softmax
         if mask is not None:
             scores = scores.masked_fill(mask == 0, float('-inf'))
         
-        # STEP 6: Apply softmax to get attention weights
+        # STEP 5: Apply softmax to get attention weights
         # Use F.softmax()
         attention_weights = F.softmax(scores, dim=-1)
         
-        # STEP 7: Compute output
+        # STEP 6: Compute output
         # Formula: output = attention_weights × V
         # Expected shape: (B, L, d_v)
         output = torch.bmm(attention_weights, V)

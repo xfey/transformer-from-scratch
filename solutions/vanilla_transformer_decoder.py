@@ -58,11 +58,12 @@ class FeedForward(nn.Module):
         # STEP 1: Create the two linear transformations
         # First: d_model -> d_ff
         # Second: d_ff -> d_model
-        
+        self.linear1 = nn.Linear(d_model, d_ff)
+        self.linear2 = nn.Linear(d_ff, d_model)
         
         # STEP 2: Initialize dropout
         # Create dropout layer with specified rate
-        
+        self.dropout = nn.Dropout(dropout)
         
     def forward(self, x):
         """
@@ -76,8 +77,8 @@ class FeedForward(nn.Module):
         """
         # STEP 3: Apply the feed-forward transformations
         # First linear -> ReLU -> Dropout -> Second linear
-        
-        
+        x = self.dropout(torch.relu(self.linear1(x)))
+        x = self.linear2(x)
         return x
 
 
@@ -105,24 +106,27 @@ class DecoderLayer(nn.Module):
         super().__init__()
         # STEP 1: Initialize masked self-attention
         # Create MultiHeadAttention instance for self-attention
-        
+        self.self_attn = MultiHeadAttention(d_model, num_heads)
         
         # STEP 2: Initialize cross-attention
         # Create MultiHeadAttention instance for cross-attention
-        
+        self.cross_attn = MultiHeadAttention(d_model, num_heads)
         
         # STEP 3: Initialize feed-forward network
         # Create feed-forward network instance
-        
+        self.feed_forward = FeedForward(d_model, d_ff, dropout)
         
         # STEP 4: Initialize layer normalizations
         # Three LayerNorm instances: self-attention, cross-attention, feed-forward
-
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.norm3 = nn.LayerNorm(d_model)
         
         # STEP 5: Initialize dropout
         # Create dropout layer
+        self.dropout = nn.Dropout(dropout)
         
-        
+
     def forward(self, x, enc_output, src_mask=None, tgt_mask=None):
         """
         Pass the input through the decoder layer.
@@ -138,15 +142,18 @@ class DecoderLayer(nn.Module):
         """
         # STEP 6: Apply masked self-attention sub-layer
         # Masked multi-head attention -> Dropout -> Add & Norm
-
+        attn_output = self.self_attn(x, x, x, tgt_mask)
+        x = self.norm1(x + self.dropout(attn_output))
         
         # STEP 7: Apply cross-attention sub-layer
         # Cross-attention with encoder output -> Dropout -> Add & Norm
-        
+        cross_output = self.cross_attn(x, enc_output, enc_output, src_mask)
+        x = self.norm2(x + self.dropout(cross_output))
         
         # STEP 8: Apply feed-forward sub-layer
         # Feed-forward -> Dropout -> Add & Norm
-        
+        ff_output = self.feed_forward(x)
+        x = self.norm3(x + self.dropout(ff_output))
         
         return x
 
@@ -170,11 +177,14 @@ class TransformerDecoder(nn.Module):
         super().__init__()
         # STEP 9: Create decoder layers
         # Create a ModuleList of DecoderLayer instances
-        
+        self.layers = nn.ModuleList([
+            DecoderLayer(d_model, num_heads, d_ff, dropout)
+            for _ in range(num_layers)
+        ])
         
         # STEP 10: Initialize dropout
         # Create dropout layer
-        
+        self.dropout = nn.Dropout(dropout)
         
     def forward(self, x, enc_output, src_mask=None, tgt_mask=None):
         """
@@ -191,6 +201,7 @@ class TransformerDecoder(nn.Module):
         """
         # STEP 11: Pass input through each decoder layer in sequence
         # Apply dropout to the input, then pass through layers
-        
-        
-        return x
+        x = self.dropout(x)
+        for layer in self.layers:
+            x = layer(x, enc_output, src_mask, tgt_mask)
+        return x 

@@ -79,30 +79,26 @@ class ScaledDotProductAttention(nn.Module):
                 - output shape: (B, L, d_v)
                 - attention_weights shape: (B, L, L)
         """
-        # STEP 2: Get batch size and sequence length
-        # Hint: Use Q.size()
-        
-        
-        # STEP 3: Compute attention scores
+        # STEP 2: Compute attention scores
         # Formula: scores = Q × K^T
         # Expected shape: (B, L, L)
         
         
-        # STEP 4: Scale the scores
+        # STEP 3: Scale the scores
         # Formula: scores = scores / √d_k
         
         
-        # STEP 5: Apply mask if provided
+        # STEP 4: Apply mask if provided
         # Set masked positions to -inf before softmax
         if mask is not None:
             # Your code here
             pass
         
-        # STEP 6: Apply softmax to get attention weights
+        # STEP 5: Apply softmax to get attention weights
         # Use F.softmax()
         
         
-        # STEP 7: Compute output
+        # STEP 6: Compute output
         # Formula: output = attention_weights × V
         # Expected shape: (B, L, d_v)
         
