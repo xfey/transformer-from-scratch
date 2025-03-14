@@ -2,8 +2,7 @@
 
 A step-by-step tutorial for implementing Transformer architectures from scratch in PyTorch.
 
-🚧 This code is under rapid development.
-🚧 这个项目刚刚成立，正在快速补充中。
+🚧 This code is under rapid development. 方法及模型正在快速补充中。 🚧
 
 
 ## 如何开始
@@ -39,33 +38,28 @@ transformer_from_scratch/
 │   └── transformer.py          # 完整模型
 │
 ├── attention_variants/          # 注意力机制变体
-│   ├── linear_attention/       # 线性注意力
-│   ├── sparse_attention/       # 稀疏注意力
-│   └── efficient_attention/    # 高效注意力
+│   └── linear_attention       # 线性注意力
 │
-├── efficient_transformers/      # 轻量级/高效架构
-│   ├── performer/              # Performer
-│   ├── reformer/              # Reformer
-│   ├── efficient_vit/         # EfficientViT
-│   └── fast_vit/              # FastViT
+├── efficient_transformer/      # 轻量级/高效架构
+│   └── performer              # Performer
 │
-├── vision_transformers/        # 视觉 Transformer
-│   ├── vit/                   # Vision Transformer
-│   └── swin/                  # Swin Transformer
+├── vision_transformer/        # 视觉 Transformer
+│   ├── vit                   # Vision Transformer
+│   └── swin                  # Swin Transformer
 │
-└── solutions/                # 答案
+└── SOLUTIONS                # 答案
 ```
 
 ## Implemented Architectures
 
-| Architecture | Paper | Original Repo | Implementation Path |
-|-------------|-------|---------------|-------------------|
-| Vanilla Transformer | [Attention Is All You Need](https://arxiv.org/abs/1706.03762) | [tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor) | `vanilla_transformer/` |
-| Vision Transformer | [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929) | [google-research/vision_transformer](https://github.com/google-research/vision_transformer) | `vision_transformers/vit/` |
-| Swin Transformer | [Hierarchical Vision Transformer](https://arxiv.org/abs/2103.14030) | [microsoft/Swin-Transformer](https://github.com/microsoft/Swin-Transformer) | `vision_transformers/swin/` |
-| Linear Attention | [Transformers are RNNs](https://arxiv.org/abs/2006.16236) | [idiap/fast-transformers](https://github.com/idiap/fast-transformers) | `attention_variants/linear_attention/` |
-| Performer | [Rethinking Attention with Performers](https://arxiv.org/abs/2009.14794) | [google-research/performer](https://github.com/google-research/performer) | `efficient_transformers/performer/` |
-| EfficientViT | [EfficientViT](https://arxiv.org/abs/2205.14756) | [microsoft/EfficientViT](https://github.com/microsoft/EfficientViT) | `efficient_transformers/efficient_vit/` |
+| Architecture | Paper | Original Repo |
+|-------------|-------|---------------|
+| Vanilla Transformer | [Attention Is All You Need](https://arxiv.org/abs/1706.03762) | [tensorflow/tensor2tensor](https://github.com/tensorflow/tensor2tensor) |
+| Vision Transformer | [An Image is Worth 16x16 Words](https://arxiv.org/abs/2010.11929) | [google-research/vision_transformer](https://github.com/google-research/vision_transformer) |
+| Swin Transformer | [Hierarchical Vision Transformer](https://arxiv.org/abs/2103.14030) | [microsoft/Swin-Transformer](https://github.com/microsoft/Swin-Transformer) |
+| Linear Attention | [Transformers are RNNs](https://arxiv.org/abs/2006.16236) | [idiap/fast-transformers](https://github.com/idiap/fast-transformers) |
+| Performer | [Rethinking Attention with Performers](https://arxiv.org/abs/2009.14794) | [google-research/performer](https://github.com/google-research/performer) |
+| EfficientViT | [EfficientViT](https://arxiv.org/abs/2205.14756) | [microsoft/EfficientViT](https://github.com/microsoft/EfficientViT) |
 
 
 ## Contributing
